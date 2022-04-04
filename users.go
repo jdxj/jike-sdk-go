@@ -216,10 +216,10 @@ type LoginWithPhoneAndPasswordRsp struct {
 
 func (c *Client) LoginWithPhoneAndPassword(ctx context.Context, req *LoginWithPhoneAndPasswordReq) (
 	*LoginWithPhoneAndPasswordRsp, error) {
-	rsp, err := c.r(ctx).
+	rsp, err := c.apiR(ctx).
 		SetBody(req).
 		SetResult(&LoginWithPhoneAndPasswordRsp{}).
-		Post(baseURL + version + Users + "/loginWithPhoneAndPassword")
+		Post(apiBaseURL + apiVersion + Users + "/loginWithPhoneAndPassword")
 	if err != nil {
 		return nil, err
 	}

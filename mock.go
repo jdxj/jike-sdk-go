@@ -1,8 +1,9 @@
 package jike_sdk_go
 
 var (
-	mockHeader = map[string]string{
-		"Host":                     "api.ruguoapp.com",
+	mockAPIHost    = "api.ruguoapp.com"
+	mockUploadHost = "upload.ruguoapp.com"
+	mockHeader     = map[string]string{
 		"os":                       "Android",
 		"os-version":               "30",
 		"app-version":              "7.31.1",

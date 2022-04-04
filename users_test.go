@@ -3,8 +3,10 @@ package jike_sdk_go
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"testing"
+	"time"
 )
 
 var (
@@ -14,6 +16,18 @@ var (
 
 func TestMain(t *testing.M) {
 	client = NewClient(WithDebug(true))
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
+	loginReq := &LoginWithPhoneAndPasswordReq{
+		AreaCode:          "+86",
+		MobilePhoneNumber: phoneNumber,
+		Password:          password,
+	}
+	_, err := client.LoginWithPhoneAndPassword(ctx, loginReq)
+	if err != nil {
+		log.Fatalln(err)
+	}
 	os.Exit(t.Run())
 }
 

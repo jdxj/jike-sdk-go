@@ -9,8 +9,11 @@ import (
 )
 
 const (
-	baseURL = "https://api.ruguoapp.com"
-	version = "/1.0"
+	apiBaseURL = "https://api.ruguoapp.com"
+	apiVersion = "/1.0"
+
+	uploadBaseURL = "https://upload.ruguoapp.com"
+	uploadVersion = "/1.0"
 )
 
 var (
@@ -65,9 +68,20 @@ type Client struct {
 	xRequestID    string
 }
 
-func (c *Client) r(ctx context.Context) *resty.Request {
+func (c *Client) apiR(ctx context.Context) *resty.Request {
 	r := c.rc.R().
 		SetContext(ctx).
+		SetHeader("Host", mockAPIHost).
+		SetHeaders(mockHeader)
+	return r
+}
+
+func (c *Client) uploadR(ctx context.Context) *resty.Request {
+	r := c.rc.R().
+		SetContext(ctx).
+		SetHeader("Host", mockUploadHost).
+		SetHeader("x-jike-access-token", c.xAccessToken).
+		SetHeader("x-jike-refresh-token", c.xRefreshToken).
 		SetHeaders(mockHeader)
 	return r
 }
