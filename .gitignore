@@ -15,3 +15,5 @@
 # vendor/
 
 .idea/
+
+key_test.go
