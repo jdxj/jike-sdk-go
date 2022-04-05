@@ -14,6 +14,8 @@ const (
 
 	uploadBaseURL = "https://upload.ruguoapp.com"
 	uploadVersion = "/1.0"
+
+	qiNiuBaseURL = "https://upload.qiniup.com"
 )
 
 var (
@@ -72,16 +74,24 @@ func (c *Client) apiR(ctx context.Context) *resty.Request {
 	r := c.rc.R().
 		SetContext(ctx).
 		SetHeader("Host", mockAPIHost).
-		SetHeaders(mockHeader)
+		SetHeaders(mockAPIHeaders)
 	return r
 }
 
-func (c *Client) uploadR(ctx context.Context) *resty.Request {
+func (c *Client) uploadTokenR(ctx context.Context) *resty.Request {
 	r := c.rc.R().
 		SetContext(ctx).
-		SetHeader("Host", mockUploadHost).
+		SetHeader("Host", mockUploadTokenHost).
 		SetHeader("x-jike-access-token", c.xAccessToken).
 		SetHeader("x-jike-refresh-token", c.xRefreshToken).
-		SetHeaders(mockHeader)
+		SetHeaders(mockAPIHeaders)
+	return r
+}
+
+func (c *Client) uploadR(ctx context.Context, ut string) *resty.Request {
+	r := c.rc.R().
+		SetContext(ctx).
+		SetHeaders(mockUploadHeaders).
+		SetHeader("User-Agent", mockUploadUserAgent(ut))
 	return r
 }

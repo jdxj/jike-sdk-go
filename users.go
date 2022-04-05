@@ -214,6 +214,7 @@ type LoginWithPhoneAndPasswordRsp struct {
 	AgreedProtocol  json.RawMessage `json:"agreedProtocol"`
 }
 
+// todo: 何时刷新 token?
 func (c *Client) LoginWithPhoneAndPassword(ctx context.Context, req *LoginWithPhoneAndPasswordReq) (
 	*LoginWithPhoneAndPasswordRsp, error) {
 	rsp, err := c.apiR(ctx).

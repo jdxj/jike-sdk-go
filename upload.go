@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type UploadType = string
@@ -51,7 +53,7 @@ type UploadTokenRsp struct {
 }
 
 func (c *Client) UploadToken(ctx context.Context, req *UploadTokenReq) (*UploadTokenRsp, error) {
-	rsp, err := c.uploadR(ctx).
+	rsp, err := c.uploadTokenR(ctx).
 		SetQueryParams(req.Map()).
 		SetResult(&UploadTokenRsp{}).
 		Get(uploadBaseURL + uploadVersion + "/upload/token")
@@ -63,4 +65,38 @@ func (c *Client) UploadToken(ctx context.Context, req *UploadTokenReq) (*UploadT
 	}
 
 	return rsp.Result().(*UploadTokenRsp), nil
+}
+
+type UploadReq struct {
+	UploadToken string
+	Filename    string
+}
+
+type UploadRsp struct {
+	FileURL string `json:"fileUrl"`
+	ID      string `json:"id"`
+	Key     string `json:"key"`
+	Success bool   `json:"success"`
+}
+
+func (c *Client) Upload(ctx context.Context, req *UploadReq) (*UploadRsp, error) {
+	file, err := os.Open(req.Filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	rsp, err := c.uploadR(ctx, req.UploadToken).
+		SetFileReader("token", "", strings.NewReader(req.UploadToken)).
+		SetFileReader("file", mockUploadFilename(filepath.Ext(req.Filename)), file).
+		SetResult(&UploadRsp{}).
+		Post(qiNiuBaseURL)
+	if err != nil {
+		return nil, err
+	}
+	if rsp.IsError() {
+		return nil, fmt.Errorf("%w: %s", ErrUnknown, rsp.Status())
+	}
+
+	return rsp.Result().(*UploadRsp), nil
 }

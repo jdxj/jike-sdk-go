@@ -15,5 +15,7 @@
 # vendor/
 
 .idea/
+*.jpg
+*.png
 
 key_test.go
