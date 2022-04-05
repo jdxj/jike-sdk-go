@@ -108,6 +108,11 @@ type RestrictedNameChange struct {
 
 type Decorations = json.RawMessage
 
+type RefRemark struct {
+	Type  string `json:"type"`
+	RefId string `json:"refId"`
+}
+
 type LatestVisitor struct {
 	Id            string    `json:"id"`
 	Username      string    `json:"username"`
@@ -135,6 +140,8 @@ type LatestVisitor struct {
 	City     string `json:"city"`
 	Country  string `json:"country"`
 	Province string `json:"province"`
+
+	RefRemark RefRemark `json:"refRemark"`
 }
 
 type ProfileVisitInfo struct {

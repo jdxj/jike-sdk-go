@@ -53,6 +53,7 @@ func NewClient(opts ...OptFunc) *Client {
 			}).
 			OnAfterResponse(func(client *resty.Client, response *resty.Response) error {
 				log.Printf("header: %v\n", response.Header())
+				log.Printf("cookies: %v\n", response.Cookies())
 				log.Printf("body: %s\n", response.Body())
 				return nil
 			})
@@ -74,6 +75,8 @@ func (c *Client) apiR(ctx context.Context) *resty.Request {
 	r := c.rc.R().
 		SetContext(ctx).
 		SetHeader("Host", mockAPIHost).
+		SetHeader("x-jike-access-token", c.xAccessToken).
+		SetHeader("x-jike-refresh-token", c.xRefreshToken).
 		SetHeaders(mockAPIHeaders)
 	return r
 }
