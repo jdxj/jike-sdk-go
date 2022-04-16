@@ -120,6 +120,8 @@ type Picture struct {
 	CropperPosY  float64 `json:"cropperPosY"`
 	Width        int     `json:"width"`
 	Height       int     `json:"height"`
+
+	WatermarkPicUrl string `json:"watermarkPicUrl,omitempty"`
 }
 
 type WmpShare struct {

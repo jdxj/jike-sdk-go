@@ -106,7 +106,22 @@ type RestrictedNameChange struct {
 	Limits         int    `json:"limits"`
 }
 
-type Decorations = json.RawMessage
+type Dark struct {
+	PicUrl string `json:"picUrl"`
+}
+
+type Themes struct {
+	Dark Dark `json:"dark"`
+}
+
+type Sponsor struct {
+	PicUrl string `json:"picUrl"`
+	Themes Themes `json:"themes"`
+}
+
+type Decorations struct {
+	Sponsor Sponsor `json:"sponsor"`
+}
 
 type RefRemark struct {
 	Type  string `json:"type"`
@@ -147,6 +162,12 @@ type LatestVisitor struct {
 type ProfileVisitInfo struct {
 	TodayCount    int           `json:"todayCount"`
 	LatestVisitor LatestVisitor `json:"latestVisitor"`
+}
+
+type TrailingIcon struct {
+	PicUrl  string  `json:"picUrl"`
+	Url     string  `json:"url"`
+	Picture Picture `json:"picture"`
 }
 
 type User struct {
@@ -212,6 +233,14 @@ type User struct {
 	IsDefaultScreenName bool `json:"isDefaultScreenName"`
 
 	ProfileVisitInfo ProfileVisitInfo `json:"profileVisitInfo"`
+
+	City             string         `json:"city"`
+	Country          string         `json:"country"`
+	Province         string         `json:"province"`
+	Ref              string         `json:"ref"`
+	SponsorExpiresAt time.Time      `json:"sponsorExpiresAt"`
+	RefRemark        RefRemark      `json:"refRemark"`
+	TrailingIcons    []TrailingIcon `json:"trailingIcons"`
 }
 
 type LoginWithPhoneAndPasswordRsp struct {
