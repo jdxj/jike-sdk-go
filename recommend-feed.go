@@ -58,6 +58,9 @@ type ReadTrackInfo struct {
 	RecallPolicy   string         `json:"recallPolicy"`
 	AdditionalInfo AdditionalInfo `json:"additionalInfo"`
 	CurrentPage    string         `json:"currentPage"`
+
+	RecommendReason       string `json:"recommendReason"`
+	RecommendReasonPolicy string `json:"recommendReasonPolicy"`
 }
 
 type LiveItem struct {
@@ -94,6 +97,8 @@ type Poi struct {
 	Pname            string    `json:"pname"`
 	Cityname         string    `json:"cityname"`
 	FormattedAddress string    `json:"formattedAddress,omitempty"`
+
+	Countryname string `json:"countryname"`
 }
 
 type UrlsInTextItem struct {

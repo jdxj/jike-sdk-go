@@ -49,6 +49,7 @@ func NewClient(opts ...OptFunc) *Client {
 		c.rc.EnableTrace().
 			OnBeforeRequest(func(client *resty.Client, request *resty.Request) error {
 				log.Printf("url: %s\n", request.URL)
+				log.Printf("query: %s", request.QueryParam.Encode())
 				return nil
 			}).
 			OnAfterResponse(func(client *resty.Client, response *resty.Response) error {

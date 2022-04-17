@@ -128,40 +128,9 @@ type RefRemark struct {
 	RefId string `json:"refId"`
 }
 
-type LatestVisitor struct {
-	Id            string    `json:"id"`
-	Username      string    `json:"username"`
-	ScreenName    string    `json:"screenName"`
-	CreatedAt     time.Time `json:"createdAt"`
-	UpdatedAt     time.Time `json:"updatedAt"`
-	IsVerified    bool      `json:"isVerified"`
-	VerifyMessage string    `json:"verifyMessage"`
-	BriefIntro    string    `json:"briefIntro"`
-
-	AvatarImage AvatarImage `json:"avatarImage"`
-	Decorations Decorations `json:"decorations"`
-
-	ProfileImageUrl string `json:"profileImageUrl"`
-
-	StatsCount StatsCount `json:"statsCount"`
-
-	IsBannedForever bool `json:"isBannedForever"`
-	IsSponsor       bool `json:"isSponsor"`
-
-	BackgroundImage BackgroundImage `json:"backgroundImage"`
-
-	Bio      string `json:"bio"`
-	Gender   string `json:"gender"`
-	City     string `json:"city"`
-	Country  string `json:"country"`
-	Province string `json:"province"`
-
-	RefRemark RefRemark `json:"refRemark"`
-}
-
 type ProfileVisitInfo struct {
-	TodayCount    int           `json:"todayCount"`
-	LatestVisitor LatestVisitor `json:"latestVisitor"`
+	TodayCount    int   `json:"todayCount"`
+	LatestVisitor *User `json:"latestVisitor"`
 }
 
 type TrailingIcon struct {
@@ -241,6 +210,7 @@ type User struct {
 	SponsorExpiresAt time.Time      `json:"sponsorExpiresAt"`
 	RefRemark        RefRemark      `json:"refRemark"`
 	TrailingIcons    []TrailingIcon `json:"trailingIcons"`
+	Following        bool           `json:"following"`
 }
 
 type LoginWithPhoneAndPasswordRsp struct {

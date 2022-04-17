@@ -26,7 +26,7 @@ type SquarePicture struct {
 	ThumbnailUrl string `json:"thumbnailUrl"`
 
 	LivePhoto json.RawMessage `json:"livePhoto"`
-	Themes    json.RawMessage `json:"themes"`
+	Themes    Themes          `json:"themes"`
 	Nft       json.RawMessage `json:"nft"`
 }
 
@@ -69,7 +69,7 @@ type Topic struct {
 	PictureUrl               string    `json:"pictureUrl"`
 	ThumbnailUrl             string    `json:"thumbnailUrl"`
 	SubscribedStatusRawValue int       `json:"subscribedStatusRawValue"`
-	SubscribedAt             string    `json:"subscribedAt"`
+	SubscribedAt             time.Time `json:"subscribedAt"`
 	Ref                      string    `json:"ref"`
 	IsDreamTopic             bool      `json:"isDreamTopic"`
 	IsAnonymous              bool      `json:"isAnonymous"`
@@ -138,19 +138,29 @@ type ScrollingSubtitle struct {
 	Type string `json:"type"`
 }
 
-type CreatePostRspData struct {
-	Id      string `json:"id"`
-	Type    string `json:"type"`
-	Content string `json:"content"`
+type PostStatus string
 
-	UrlsInText json.RawMessage `json:"urlsInText"`
+const (
+	Normal PostStatus = "NORMAL"
+)
 
-	Status             string `json:"status"`
-	IsCommentForbidden bool   `json:"isCommentForbidden"`
-	LikeCount          int    `json:"likeCount"`
-	CommentCount       int    `json:"commentCount"`
-	RepostCount        int    `json:"repostCount"`
-	ShareCount         int    `json:"shareCount"`
+type Pinned struct {
+	PersonalUpdate bool `json:"personalUpdate"`
+}
+
+type Post struct {
+	Id      string   `json:"id"`
+	Type    FeedType `json:"type"`
+	Content string   `json:"content"`
+
+	UrlsInText []UrlsInTextItem `json:"urlsInText"`
+
+	Status             PostStatus `json:"status"`
+	IsCommentForbidden bool       `json:"isCommentForbidden"`
+	LikeCount          int        `json:"likeCount"`
+	CommentCount       int        `json:"commentCount"`
+	RepostCount        int        `json:"repostCount"`
+	ShareCount         int        `json:"shareCount"`
 
 	Topic    Topic     `json:"topic"`
 	Pictures []Picture `json:"pictures"`
@@ -158,7 +168,7 @@ type CreatePostRspData struct {
 	Collected bool `json:"collected"`
 
 	CollectTime json.RawMessage `json:"collectTime"`
-	User        LatestVisitor   `json:"user"`
+	User        User            `json:"user"`
 
 	CreatedAt             time.Time `json:"createdAt"`
 	IsFeatured            bool      `json:"isFeatured"`
@@ -167,12 +177,18 @@ type CreatePostRspData struct {
 
 	Rollouts           Rollouts            `json:"rollouts"`
 	ScrollingSubtitles []ScrollingSubtitle `json:"scrollingSubtitles"`
+
+	Poi                  Poi           `json:"poi"`
+	IsSuppressed         bool          `json:"isSuppressed"`
+	Pinned               Pinned        `json:"pinned"`
+	ShouldShowCommentTip bool          `json:"shouldShowCommentTip"`
+	ReadTrackInfo        ReadTrackInfo `json:"readTrackInfo"`
 }
 
 type CreatePostRsp struct {
-	Success bool              `json:"success"`
-	Toast   string            `json:"toast"`
-	Data    CreatePostRspData `json:"data"`
+	Success bool   `json:"success"`
+	Toast   string `json:"toast"`
+	Data    Post   `json:"data"`
 }
 
 func (c *Client) CreatePost(ctx context.Context, req *CreatePostReq) (*CreatePostRsp, error) {
@@ -188,4 +204,37 @@ func (c *Client) CreatePost(ctx context.Context, req *CreatePostReq) (*CreatePos
 	}
 
 	return rsp.Result().(*CreatePostRsp), nil
+}
+
+type UserRef string
+
+const (
+	RecommendFeedPost UserRef = "RECOMMEND_FEED_POST"
+)
+
+type GetPostsReq struct {
+	ID      string
+	UserRef UserRef
+}
+
+type GetPostsRsp struct {
+	Data Post `json:"data"`
+}
+
+func (c *Client) GetPosts(ctx context.Context, req *GetPostsReq) (*GetPostsRsp, error) {
+	rsp, err := c.apiR(ctx).
+		SetQueryParams(map[string]string{
+			"id":      req.ID,
+			"userRef": string(req.UserRef),
+		}).
+		SetResult(&GetPostsRsp{}).
+		Get(apiBaseURL + apiVersion + Posts + "/get")
+	if err != nil {
+		return nil, err
+	}
+	if rsp.IsError() {
+		return nil, fmt.Errorf("%w: %s", ErrUnknown, rsp.Status())
+	}
+
+	return rsp.Result().(*GetPostsRsp), nil
 }
