@@ -139,6 +139,14 @@ type TrailingIcon struct {
 	Picture Picture `json:"picture"`
 }
 
+type Medal struct {
+	PicUrl      string `json:"picUrl"`
+	Url         string `json:"url,omitempty"`
+	Name        string `json:"name"`
+	GotMedalAt  string `json:"gotMedalAt"`
+	BadgePicUrl string `json:"badgePicUrl,omitempty"`
+}
+
 type User struct {
 	Id            string    `json:"id"`
 	Username      string    `json:"username"`
@@ -185,8 +193,8 @@ type User struct {
 
 	RelationshipState RelationshipState `json:"relationshipState"`
 
-	ShowRespect bool            `json:"showRespect"`
-	Medals      json.RawMessage `json:"medals"`
+	ShowRespect bool    `json:"showRespect"`
+	Medals      []Medal `json:"medals"`
 
 	ProfileTags []ProfileTag `json:"profileTags"`
 
@@ -211,6 +219,12 @@ type User struct {
 	RefRemark        RefRemark      `json:"refRemark"`
 	TrailingIcons    []TrailingIcon `json:"trailingIcons"`
 	Following        bool           `json:"following"`
+	Blocking         bool           `json:"blocking"`
+	Muting           bool           `json:"muting"`
+	Watching         bool           `json:"watching"`
+	IsWatching       bool           `json:"isWatching"`
+	StoryStatus      string         `json:"storyStatus"`
+	Respected        bool           `json:"respected"`
 }
 
 type LoginWithPhoneAndPasswordRsp struct {
@@ -239,4 +253,35 @@ func (c *Client) LoginWithPhoneAndPassword(ctx context.Context, req *LoginWithPh
 	c.xRefreshToken = rsp.Header().Get("x-jike-refresh-token")
 	c.xRequestID = rsp.Header().Get("x-request-id")
 	return loginRsp, nil
+}
+
+type GetProfileReq struct {
+	Username string
+}
+
+type RelationUsers struct {
+	Message string `json:"message"`
+	Users   []User `json:"users"`
+}
+
+type GetProfileRsp struct {
+	User            User          `json:"user"`
+	RelationMessage string        `json:"relationMessage"`
+	RelationUsers   RelationUsers `json:"relationUsers"`
+	Invisible       bool          `json:"invisible"`
+}
+
+func (c *Client) GetProfile(ctx context.Context, req *GetProfileReq) (*GetProfileRsp, error) {
+	rsp, err := c.apiR(ctx).
+		SetQueryParam("username", req.Username).
+		SetResult(&GetProfileRsp{}).
+		Get(apiBaseURL + apiVersion + Users + "/profile")
+	if err != nil {
+		return nil, err
+	}
+	if rsp.IsError() {
+		return nil, fmt.Errorf("%w: %s", ErrUnknown, rsp.Status())
+	}
+
+	return rsp.Result().(*GetProfileRsp), nil
 }

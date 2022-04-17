@@ -45,3 +45,25 @@ func TestClient_LoginWithPhoneAndPassword(t *testing.T) {
 	fmt.Printf("at: %s\n", client.xAccessToken)
 	fmt.Printf("rt: %s\n", client.xRefreshToken)
 }
+
+func TestClient_GetProfile(t *testing.T) {
+	feedList, err := client.RecommendFeedList(context.Background(), &RecommendFeedListReq{
+		Trigger: TriggerUser,
+	})
+	if err != nil {
+		t.Fatalf("%s\n", err)
+	}
+	if len(feedList.Data) == 0 {
+		t.Fatalf("no feed")
+	}
+
+	name := feedList.Data[0].User.Username
+	fmt.Printf("name: %s\n", name)
+	rsp, err := client.GetProfile(context.Background(), &GetProfileReq{
+		Username: name,
+	})
+	if err != nil {
+		t.Fatalf("%s\n", err)
+	}
+	fmt.Printf("%+v\n", rsp)
+}
